@@ -283,7 +283,6 @@
                 <option value="avif" id="cv-opt-avif">AVIF</option>
                 <option value="svg">SVG (image intégrée)</option>
                 <option value="heic" disabled>HEIC — indisponible</option>
-                <option value="raw" disabled>RAW — indisponible</option>
               </select>
               <div class="field" id="cv-quality-row" style="margin-top:13px;">
                 <div class="field-row"><label for="cv-quality-slider">Qualité</label><span class="val"
@@ -298,11 +297,9 @@
               <div class="notice notice-info" id="cv-notice" style="margin-top:13px;display:none;"></div>
             </div>
             <div class="card control-card">
-              <h3>Pourquoi pas HEIC ou RAW ?</h3>
+              <h3>Pourquoi pas HEIC ?</h3>
               <p class="hint"><b style="color:var(--ink-dim);">HEIC</b> repose sur un encodeur breveté que les
-                navigateurs n'exposent pas au web.<br><br><b style="color:var(--ink-dim);">RAW</b> désigne les données
-                brutes d'un capteur photo (par ex. CR2, NEF, ARW) : ce n'est pas un simple encodage d'image finie, donc
-                impossible à générer depuis un fichier déjà traité.</p>
+                navigateurs n'exposent pas au web : impossible à générer côté client, quel que soit le navigateur.</p>
             </div>
             <button class="btn btn-accent btn-block" id="cv-download-btn" disabled>Télécharger</button>
             <button class="btn btn-text btn-block" id="cv-reset-btn">Recommencer</button>
