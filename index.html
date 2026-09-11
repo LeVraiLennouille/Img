@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Atelier — outils image</title>
   <meta name="description"
-    content="Compression, redimensionnement, conversion, recadrage, amélioration, détourage, filigrane et export HTML→image, entièrement dans le navigateur.">
+    content="Compression, redimensionnement, conversion, recadrage, amélioration, détourage et filigrane, entièrement dans le navigateur.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -74,14 +74,6 @@
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 3c-3 4-5 6.5-5 9a5 5 0 0 0 10 0c0-2.5-2-5-5-9z" /></svg></span>
             <span class="lb">Filigrane</span>
-          </button></li>
-        <li><button class="rail-btn" data-tool="html2img">
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 6l-5 6 5 6" />
-                <path d="M16 6l5 6-5 6" />
-                <rect x="9" y="9.5" width="6" height="5" rx="1" /></svg></span>
-            <span class="lb">HTML→image</span>
           </button></li>
       </ul>
     </nav>
@@ -711,104 +703,6 @@
             </div>
             <button class="btn btn-accent btn-block" id="wm-download-btn" disabled>Télécharger</button>
             <button class="btn btn-text btn-block" id="wm-reset-btn">Recommencer</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================================================================ -->
-      <!-- OUTIL 8 — HTML EN IMAGE -->
-      <!-- ================================================================ -->
-      <section class="tool-panel" id="panel-html2img" data-tool="html2img" aria-labelledby="h-html2img">
-        <div class="panel-head">
-          <h2 id="h-html2img">HTML en image</h2>
-          <p>Écrivez ou collez un fragment HTML et sa feuille de style, puis exportez le rendu en PNG ou JPG. Le rendu
-            est isolé du reste de l'atelier : votre CSS ne peut pas affecter cette page.</p>
-        </div>
-        <div class="panel-body">
-          <div class="stage-col">
-            <div class="card" style="padding:16px;">
-              <div class="code-tabs">
-                <button type="button" class="code-tab-btn" data-pane="html" aria-pressed="true">HTML</button>
-                <button type="button" class="code-tab-btn" data-pane="css" aria-pressed="false">CSS</button>
-              </div>
-              <div class="code-pane is-active" id="hi-pane-html">
-                <textarea class="text-input" id="hi-html-textarea" spellcheck="false">&lt;div class="card"&gt;
-  &lt;p class="quote"&gt;&amp;ldquo;La simplicit&#233; est la sophistication supr&#234;me.&amp;rdquo;&lt;/p&gt;
-  &lt;p class="author"&gt;&#8212; L&#233;onard de Vinci&lt;/p&gt;
-&lt;/div&gt;</textarea>
-              </div>
-              <div class="code-pane" id="hi-pane-css">
-                <textarea class="text-input" id="hi-css-textarea" spellcheck="false">body{
-  margin:0; height:100%;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg,#1B1D21,#0C8B85);
-  font-family:Georgia,serif;
-}
-.card{max-width:80%;text-align:center;color:#fff;}
-.quote{font-size:28px;line-height:1.4;margin:0 0 14px;}
-.author{font-size:15px;opacity:.8;margin:0;letter-spacing:.03em;}</textarea>
-              </div>
-              <div class="tpl-row" style="margin-top:11px;">
-                <button class="tpl-chip" type="button" data-tpl="quote">Carte citation</button>
-                <button class="tpl-chip" type="button" data-tpl="social">Bandeau réseau social</button>
-                <button class="tpl-chip" type="button" data-tpl="receipt">Reçu</button>
-              </div>
-            </div>
-            <div class="card" style="padding:16px;">
-              <h3 style="font-family:var(--font-ui);font-weight:600;font-size:12.5px;margin-bottom:12px;">Aperçu</h3>
-              <div class="stage" style="min-height:200px;display:flex;overflow:auto;" id="hi-stage">
-                <div class="loading-overlay" id="hi-loading"><span class="spinner"></span><span
-                    class="msg">Rendu…</span></div>
-                <div id="hi-preview-frame"
-                  style="border:1px solid var(--line);background:#fff;overflow:hidden;flex:none;">
-                  <div id="hi-preview-root"></div>
-                </div>
-              </div>
-            </div>
-            <div class="stat-strip" id="hi-stats" style="display:none;">
-              <div class="stat"><span class="k">Dimensions export</span><span class="v mono" id="hi-stat-dims">—</span>
-              </div>
-              <div class="stat"><span class="k">Poids</span><span class="v mono" id="hi-stat-size">—</span></div>
-            </div>
-          </div>
-          <div class="controls-col">
-            <div class="card control-card">
-              <h3>Cadre</h3>
-              <div class="dim-row" style="grid-template-columns:1fr 1fr;">
-                <div class="field" style="margin-bottom:0;"><label for="hi-width-input">Largeur</label><input
-                    class="num mono" type="number" id="hi-width-input" value="800" min="50" max="4000"></div>
-                <div class="field" style="margin-bottom:0;"><label for="hi-height-input">Hauteur</label><input
-                    class="num mono" type="number" id="hi-height-input" value="450" min="50" max="4000"></div>
-              </div>
-              <div class="field" style="margin-top:12px;">
-                <label for="hi-scale-select">Résolution</label>
-                <select id="hi-scale-select">
-                  <option value="1">1× (standard)</option>
-                  <option value="2" selected>2× (rétina)</option>
-                  <option value="3">3× (impression)</option>
-                </select>
-              </div>
-            </div>
-            <div class="card control-card">
-              <h3>Export</h3>
-              <select id="hi-format-select">
-                <option value="png" selected>PNG</option>
-                <option value="jpg">JPG</option>
-              </select>
-              <div class="field" id="hi-quality-row" style="display:none;margin-top:12px;">
-                <div class="field-row"><label for="hi-quality-slider">Qualité</label><span class="val"
-                    id="hi-quality-value">90%</span></div>
-                <input type="range" id="hi-quality-slider" min="1" max="100" value="90">
-              </div>
-              <div class="color-row" id="hi-bg-row" style="margin-top:12px;">
-                <input type="color" id="hi-bg-color" value="#ffffff">
-                <span class="hint">Fond si pas de transparence</span>
-              </div>
-            </div>
-            <button class="btn btn-ghost btn-block" id="hi-render-btn" type="button">Actualiser l'aperçu</button>
-            <button class="btn btn-accent btn-block" id="hi-download-btn" disabled>Télécharger l'image</button>
-            <p class="hint">Les balises <span class="mono">&lt;script&gt;</span> sont ignorées : cet outil capture un
-              rendu visuel, pas une page interactive.</p>
           </div>
         </div>
       </section>

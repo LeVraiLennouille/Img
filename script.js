@@ -110,7 +110,7 @@
         };
       }
     },
-    // Charge un fichier en HTMLImageElement, avec gestion spécifique du SVG (dimensions intrinsèques).
+
     async loadImage(file) {
       const format = this.detectFormat(file);
       if (format === 'svg') {
@@ -362,9 +362,6 @@
     return Math.sqrt((L1 - L2) ** 2 + (A1 - A2) ** 2 + (B1 - B2) ** 2);
   };
 
-  // Détourage par propagation (BFS). Chaque étape doit être proche de son voisin immédiat
-  // (tolère l'anti-aliasing/les dégradés progressifs) ET rester proche de la couleur moyenne
-  // mesurée sur les bords (empêche une chaîne de petits pas de "fuiter" jusqu'au sujet).
   Engine.NEIGHBOR_STEP_LIMIT = 22;
   Engine.floodFillBackground = function (data, width, height, tolerance, seeds, visitedOut) {
     const visited = visitedOut || new Uint8Array(width * height);
@@ -613,7 +610,6 @@
     return palette;
   };
 
-  // Isole un fragment CSS sous un sélecteur racine (utilisé par l'outil HTML→image).
   Engine.scopeCSS = function (css, scopeSelector) {
     let i = 0;
     const n = css.length;
@@ -694,11 +690,11 @@
     return parseList();
   };
 
-  window.__AtelierEngine = Engine; // exposé pour d'éventuels tests manuels en console
+  window.__AtelierEngine = Engine;
   window.__AtelierUtils = Utils;
 
   Utils.capDimensions = function (w, h, maxPixels) {
-    maxPixels = maxPixels || 30000000; // ~30 MP, garde-fou mémoire navigateur
+    maxPixels = maxPixels || 30000000;
     const total = w * h;
     if (total <= maxPixels) return {
       width: Math.max(1, Math.round(w)),
@@ -2409,158 +2405,6 @@
     }
   };
 
-  const Html2Img = {
-    els: {},
-    init() {
-      const $ = id => document.getElementById(id);
-      this.els = {
-        htmlArea: $('hi-html-textarea'),
-        cssArea: $('hi-css-textarea'),
-        tabBtns: Array.prototype.slice.call(document.querySelectorAll('.code-tab-btn')),
-        paneHtml: $('hi-pane-html'),
-        paneCss: $('hi-pane-css'),
-        tplChips: Array.prototype.slice.call(document.querySelectorAll('.tpl-chip')),
-        stage: $('hi-stage'),
-        loading: $('hi-loading'),
-        previewFrame: $('hi-preview-frame'),
-        previewRoot: $('hi-preview-root'),
-        stats: $('hi-stats'),
-        statDims: $('hi-stat-dims'),
-        statSize: $('hi-stat-size'),
-        widthInput: $('hi-width-input'),
-        heightInput: $('hi-height-input'),
-        scaleSelect: $('hi-scale-select'),
-        formatSelect: $('hi-format-select'),
-        qualityRow: $('hi-quality-row'),
-        qualitySlider: $('hi-quality-slider'),
-        qualityValue: $('hi-quality-value'),
-        bgRow: $('hi-bg-row'),
-        bgColor: $('hi-bg-color'),
-        renderBtn: $('hi-render-btn'),
-        downloadBtn: $('hi-download-btn'),
-      };
-      this.els.tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          this.els.tabBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-          const pane = btn.dataset.pane;
-          this.els.paneHtml.classList.toggle('is-active', pane === 'html');
-          this.els.paneCss.classList.toggle('is-active', pane === 'css');
-        });
-      });
-      this.els.tplChips.forEach(chip => chip.addEventListener('click', () => this.loadTemplate(chip.dataset.tpl)));
-      const debouncedRender = Utils.debounce(() => this.renderPreview(), 450);
-      this.els.htmlArea.addEventListener('input', debouncedRender);
-      this.els.cssArea.addEventListener('input', debouncedRender);
-      this.els.widthInput.addEventListener('change', () => this.renderPreview());
-      this.els.heightInput.addEventListener('change', () => this.renderPreview());
-      this.updateFormatUI();
-      this.els.formatSelect.addEventListener('change', () => this.updateFormatUI());
-      this.els.qualitySlider.addEventListener('input', () => {
-        this.els.qualityValue.textContent = this.els.qualitySlider.value + '%';
-      });
-      this.els.renderBtn.addEventListener('click', () => this.renderPreview());
-      this.els.downloadBtn.addEventListener('click', () => this.exportImage());
-      this.els.downloadBtn.disabled = false;
-      this.renderPreview();
-    },
-    updateFormatUI() {
-      const isJpg = this.els.formatSelect.value === 'jpg';
-      this.els.qualityRow.style.display = isJpg ? 'block' : 'none';
-      this.els.bgRow.style.display = isJpg ? 'flex' : 'none';
-    },
-    loadTemplate(key) {
-      const templates = {
-        quote: {
-          html: '<div class="card">\n  <p class="quote">&ldquo;La simplicit\u00e9 est la sophistication supr\u00eame.&rdquo;</p>\n  <p class="author">\u2014 L\u00e9onard de Vinci</p>\n</div>',
-          css: "body{margin:0;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1B1D21,#0C8B85);font-family:Georgia,serif;}\n.card{max-width:80%;text-align:center;color:#fff;}\n.quote{font-size:28px;line-height:1.4;margin:0 0 14px;}\n.author{font-size:15px;opacity:.8;margin:0;letter-spacing:.03em;}",
-          w: 800,
-          h: 450
-        },
-        social: {
-          html: '<div class="wrap">\n  <div class="avatar"></div>\n  <div class="txt">\n    <div class="name">Studio Atelier</div>\n    <div class="handle">Nouveau projet en ligne aujourd\u2019hui</div>\n  </div>\n</div>',
-          css: "body{margin:0;height:100%;display:flex;align-items:center;background:#fff;font-family:'IBM Plex Sans',sans-serif;padding:0 48px;}\n.wrap{display:flex;align-items:center;gap:20px;}\n.avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0C8B85,#1B1D21);flex:none;}\n.name{font-weight:700;font-size:20px;color:#1B1D21;}\n.handle{font-size:15px;color:#676B72;margin-top:4px;}",
-          w: 1200,
-          h: 300
-        },
-        receipt: {
-          html: '<div class="receipt">\n  <div class="h">STUDIO ATELIER</div>\n  <div class="line"><span>Compression image</span><span>0,00\u00a0\u20ac</span></div>\n  <div class="line"><span>Redimensionnement</span><span>0,00\u00a0\u20ac</span></div>\n  <div class="sep"></div>\n  <div class="line total"><span>Total</span><span>0,00\u00a0\u20ac</span></div>\n</div>',
-          css: "body{margin:0;height:100%;display:flex;align-items:center;justify-content:center;background:#EFEFEA;font-family:'IBM Plex Mono',monospace;}\n.receipt{background:#fff;padding:28px 26px;width:260px;box-shadow:0 10px 30px rgba(0,0,0,.12);}\n.h{text-align:center;font-weight:600;letter-spacing:.06em;margin-bottom:16px;}\n.line{display:flex;justify-content:space-between;font-size:12.5px;margin:6px 0;color:#333;}\n.sep{border-top:1px dashed #bbb;margin:10px 0;}\n.total{font-weight:700;}",
-          w: 340,
-          h: 300
-        }
-      };
-      const t = templates[key];
-      if (!t) return;
-      this.els.htmlArea.value = t.html;
-      this.els.cssArea.value = t.css;
-      this.els.widthInput.value = t.w;
-      this.els.heightInput.value = t.h;
-      this.renderPreview();
-    },
-    renderPreview() {
-      const w = Utils.clamp(parseInt(this.els.widthInput.value, 10) || 800, 50, 4000);
-      const h = Utils.clamp(parseInt(this.els.heightInput.value, 10) || 450, 50, 4000);
-      this.els.previewFrame.style.width = w + 'px';
-      this.els.previewFrame.style.height = h + 'px';
-      const rawHtml = this.els.htmlArea.value.replace(/<script[\s\S]*?<\/script>/gi, '');
-      const rawCss = this.els.cssArea.value;
-      const scoped = Engine.scopeCSS(rawCss, '#hi-preview-root');
-      let styleEl = document.getElementById('hi-scoped-style');
-      if (!styleEl) {
-        styleEl = document.createElement('style');
-        styleEl.id = 'hi-scoped-style';
-        document.head.appendChild(styleEl);
-      }
-      styleEl.textContent = scoped;
-      this.els.previewRoot.innerHTML = rawHtml;
-      this.els.previewRoot.style.width = w + 'px';
-      this.els.previewRoot.style.height = h + 'px';
-      this.els.previewRoot.style.overflow = 'hidden';
-      this.els.previewRoot.style.position = 'relative';
-    },
-    async ensureLib() {
-      if (window.html2canvas) return;
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-        s.onload = resolve;
-        s.onerror = () => reject(new Error('Impossible de charger la bibliothèque de capture (connexion internet requise pour cet outil).'));
-        document.head.appendChild(s);
-      });
-    },
-    async exportImage() {
-      Utils.showLoading(this.els.loading, true);
-      await Utils.nextFrame();
-      try {
-        this.renderPreview();
-        await this.ensureLib();
-        const w = Utils.clamp(parseInt(this.els.widthInput.value, 10) || 800, 50, 4000);
-        const h = Utils.clamp(parseInt(this.els.heightInput.value, 10) || 450, 50, 4000);
-        const scale = parseFloat(this.els.scaleSelect.value);
-        const format = this.els.formatSelect.value;
-        const canvas = await window.html2canvas(this.els.previewRoot, {
-          width: w,
-          height: h,
-          scale: scale,
-          backgroundColor: format === 'jpg' ? this.els.bgColor.value : null,
-          useCORS: true,
-        });
-        const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
-        const quality = format === 'jpg' ? parseInt(this.els.qualitySlider.value, 10) / 100 : undefined;
-        const blob = await Utils.canvasToBlob(canvas, mime, quality);
-        this._resultBlob = blob;
-        this.els.stats.style.display = 'flex';
-        this.els.statDims.textContent = canvas.width + ' × ' + canvas.height;
-        this.els.statSize.textContent = Utils.bytesToSize(blob.size);
-        Utils.download(blob, 'export-html.' + (format === 'jpg' ? 'jpg' : 'png'));
-      } catch (e) {
-        Utils.toast(e.message || "L'export a échoué.");
-      } finally {
-        Utils.showLoading(this.els.loading, false);
-      }
-    }
-  };
-
   document.addEventListener('DOMContentLoaded', function () {
     initNav();
     Compress.init();
@@ -2570,7 +2414,6 @@
     Enhance.init();
     RemoveBG.init();
     Watermark.init();
-    Html2Img.init();
   });
 
 })();
