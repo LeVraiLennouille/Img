@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Atelier — outils image</title>
+  <meta name="description"
+    content="Compression, redimensionnement, conversion, recadrage, amélioration, détourage, filigrane et export HTML→image, entièrement dans le navigateur.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@400;600&family=Bebas+Neue&family=Caveat:wght@600;700&display=swap"
+    rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app">
+
+    <nav class="rail" aria-label="Outils">
+      <div class="rail-brand"><span class="mark">A.</span></div>
+      <ul class="rail-nav" id="rail-nav">
+        <li><button class="rail-btn" data-tool="compress" aria-current="true">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 3v4a2 2 0 0 1-2 2H3" />
+                <path d="M15 3v4a2 2 0 0 0 2 2h4" />
+                <path d="M9 21v-4a2 2 0 0 0-2-2H3" />
+                <path d="M15 21v-4a2 2 0 0 1 2-2h4" /></svg></span>
+            <span class="lb">Compresser</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="resize">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14v6h6" />
+                <path d="M20 10V4h-6" />
+                <path d="M4 20l7-7" />
+                <path d="M20 4l-7 7" /></svg></span>
+            <span class="lb">Redimensionner</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="convert">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+                <path d="M3 21v-5h5" /></svg></span>
+            <span class="lb">Convertir</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="croprotate">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2v14a2 2 0 0 0 2 2h14" />
+                <path d="M18 22V8a2 2 0 0 0-2-2H2" /></svg></span>
+            <span class="lb">Recadrer</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="enhance">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3z" />
+                <path d="M19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15z" /></svg></span>
+            <span class="lb">Améliorer</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="removebg">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3" />
+                <circle cx="12" cy="12" r="5" /></svg></span>
+            <span class="lb">Détourer</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="watermark">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3c-3 4-5 6.5-5 9a5 5 0 0 0 10 0c0-2.5-2-5-5-9z" /></svg></span>
+            <span class="lb">Filigrane</span>
+          </button></li>
+        <li><button class="rail-btn" data-tool="html2img">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 6l-5 6 5 6" />
+                <path d="M16 6l5 6-5 6" />
+                <rect x="9" y="9.5" width="6" height="5" rx="1" /></svg></span>
+            <span class="lb">HTML→image</span>
+          </button></li>
+      </ul>
+    </nav>
+
+    <main class="workspace" id="workspace">
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 1 — COMPRESSER -->
+      <!-- ================================================================ -->
+      <section class="tool-panel is-active" id="panel-compress" data-tool="compress" aria-labelledby="h-compress">
+        <div class="panel-head">
+          <h2 id="h-compress">Compresser une image</h2>
+          <p>Réduisez le poids d'un fichier en conservant son format d'origine. Le curseur de qualité et, pour le PNG,
+            la réduction de palette, agissent en temps réel sur l'aperçu.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="cp-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="cp-file-input"
+                accept=".png,.jpg,.jpeg,.svg,.webp,.avif,image/png,image/jpeg,image/svg+xml,image/webp,image/avif"
+                aria-label="Choisir une image à compresser">
+            </div>
+            <div class="stage checkerboard" id="cp-stage">
+              <div class="loading-overlay" id="cp-loading"><span class="spinner"></span><span
+                  class="msg">Compression…</span></div>
+              <img class="stage-media" id="cp-preview" alt="Aperçu de l'image compressée">
+            </div>
+            <div class="stat-strip" id="cp-stats" style="display:none;">
+              <div class="stat"><span class="k">Original</span><span class="v mono" id="cp-stat-before">—</span></div>
+              <span class="stat-sep">→</span>
+              <div class="stat"><span class="k">Compressé</span><span class="v mono accent" id="cp-stat-after">—</span>
+              </div>
+              <div class="stat"><span class="k">Gain</span><span class="v mono accent" id="cp-stat-gain">—</span></div>
+              <div class="stat"><span class="k">Dimensions</span><span class="v mono" id="cp-stat-dims">—</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card" id="cp-controls-raster">
+              <h3>Qualité</h3>
+              <div class="field">
+                <div class="field-row"><label for="cp-quality-slider">Compression</label><span class="val"
+                    id="cp-quality-value">80%</span></div>
+                <input type="range" id="cp-quality-slider" min="1" max="100" value="80">
+                <p class="hint">Plus bas = fichier plus léger, plus de perte visuelle.</p>
+              </div>
+              <div class="field" id="cp-png-field" style="display:none;">
+                <div class="toggle-row">
+                  <div>
+                    <div class="tt">Réduire la palette</div>
+                    <div class="desc">Diminue le nombre de couleurs (PNG)</div>
+                  </div>
+                  <label class="switch"><input type="checkbox" id="cp-quantize-toggle"><span
+                      class="track"></span></label>
+                </div>
+                <select id="cp-colors-select" disabled style="margin-top:9px;">
+                  <option value="256">256 couleurs</option>
+                  <option value="128">128 couleurs</option>
+                  <option value="64" selected>64 couleurs</option>
+                  <option value="32">32 couleurs</option>
+                  <option value="16">16 couleurs</option>
+                </select>
+              </div>
+            </div>
+            <div class="card control-card" id="cp-controls-svg" style="display:none;">
+              <h3>Vectoriel</h3>
+              <p class="hint">Ce SVG sera nettoyé : commentaires, métadonnées d'éditeur et décimales superflues seront
+                retirés. Le tracé vectoriel reste inchangé — aucune perte de qualité.</p>
+            </div>
+            <button class="btn btn-accent btn-block" id="cp-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="cp-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 2 — REDIMENSIONNER -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-resize" data-tool="resize" aria-labelledby="h-resize">
+        <div class="panel-head">
+          <h2 id="h-resize">Redimensionner une image</h2>
+          <p>Changez les dimensions en pourcentage ou en pixels exacts. Le ratio peut être verrouillé pour éviter toute
+            déformation.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="rs-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="rs-file-input"
+                accept=".png,.jpg,.jpeg,.svg,.webp,.avif,image/png,image/jpeg,image/svg+xml,image/webp,image/avif"
+                aria-label="Choisir une image à redimensionner">
+            </div>
+            <div class="stage checkerboard" id="rs-stage">
+              <div class="loading-overlay" id="rs-loading"><span class="spinner"></span><span
+                  class="msg">Redimensionnement…</span></div>
+              <img class="stage-media" id="rs-preview" alt="Aperçu de l'image redimensionnée">
+            </div>
+            <div class="stat-strip" id="rs-stats" style="display:none;">
+              <div class="stat"><span class="k">Dimensions d'origine</span><span class="v mono"
+                  id="rs-stat-before">—</span></div>
+              <span class="stat-sep">→</span>
+              <div class="stat"><span class="k">Nouvelles dimensions</span><span class="v mono accent"
+                  id="rs-stat-after">—</span></div>
+              <div class="stat"><span class="k">Poids estimé</span><span class="v mono" id="rs-stat-size">—</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card" id="rs-controls-raster">
+              <h3>Mode</h3>
+              <div class="seg seg-block" role="group" aria-label="Mode de redimensionnement">
+                <button type="button" id="rs-mode-percent-btn" aria-pressed="true">Pourcentage</button>
+                <button type="button" id="rs-mode-pixel-btn" aria-pressed="false">Pixels</button>
+              </div>
+              <div class="field" id="rs-percent-block" style="margin-top:14px;">
+                <div class="field-row"><label for="rs-percent-slider">Échelle</label><span class="val"
+                    id="rs-percent-value">100%</span></div>
+                <input type="range" id="rs-percent-slider" min="5" max="400" value="100">
+              </div>
+              <div id="rs-pixel-block" style="display:none;margin-top:14px;">
+                <div class="dim-row">
+                  <div class="field" style="margin-bottom:0;"><label for="rs-width-input">Largeur</label><input
+                      class="num mono" type="number" id="rs-width-input" min="1"></div>
+                  <button class="lock" id="rs-lock-btn" aria-pressed="true" title="Conserver le ratio"
+                    aria-label="Conserver le ratio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="11" width="14" height="9" rx="2" />
+                      <path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg></button>
+                  <div class="field" style="margin-bottom:0;"><label for="rs-height-input">Hauteur</label><input
+                      class="num mono" type="number" id="rs-height-input" min="1"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card control-card" id="rs-controls-svg" style="display:none;">
+              <h3>Vectoriel</h3>
+              <p class="hint">Un SVG se redimensionne sans jamais perdre en qualité : seuls ses attributs de dimension
+                sont modifiés, ses tracés restent identiques.</p>
+              <div class="field" style="margin-top:10px;"><label for="rs-svg-percent">Échelle</label>
+                <div class="field-row"><input type="range" id="rs-svg-percent" min="5" max="400" value="100"
+                    style="flex:1;"><span class="val" id="rs-svg-percent-value" style="margin-left:10px;">100%</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-accent btn-block" id="rs-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="rs-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 3 — CONVERTIR -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-convert" data-tool="convert" aria-labelledby="h-convert">
+        <div class="panel-head">
+          <h2 id="h-convert">Convertir une image</h2>
+          <p>Changez de format en conservant le meilleur rendu possible. Certaines cases sont grisées lorsque le
+            navigateur ou la nature du format ne permet techniquement pas la conversion.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="cv-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP, AVIF — HEIC en lecture si le navigateur le permet</div>
+              </div>
+              <input type="file" id="cv-file-input" accept=".png,.jpg,.jpeg,.svg,.webp,.avif,.heic,.heif,image/*"
+                aria-label="Choisir une image à convertir">
+            </div>
+            <div class="stage checkerboard" id="cv-stage">
+              <div class="loading-overlay" id="cv-loading"><span class="spinner"></span><span
+                  class="msg">Conversion…</span></div>
+              <img class="stage-media" id="cv-preview" alt="Aperçu de l'image convertie">
+            </div>
+            <div class="stat-strip" id="cv-stats" style="display:none;">
+              <div class="stat"><span class="k">Format d'origine</span><span class="v mono" id="cv-stat-from">—</span>
+              </div>
+              <span class="stat-sep">→</span>
+              <div class="stat"><span class="k">Nouveau format</span><span class="v mono accent"
+                  id="cv-stat-to">—</span></div>
+              <div class="stat"><span class="k">Poids</span><span class="v mono" id="cv-stat-size">—</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card">
+              <h3>Format cible</h3>
+              <select id="cv-format-select">
+                <option value="png">PNG</option>
+                <option value="jpg">JPG</option>
+                <option value="webp">WEBP</option>
+                <option value="avif" id="cv-opt-avif">AVIF</option>
+                <option value="svg">SVG (image intégrée)</option>
+                <option value="heic" disabled>HEIC — indisponible</option>
+                <option value="raw" disabled>RAW — indisponible</option>
+              </select>
+              <div class="field" id="cv-quality-row" style="margin-top:13px;">
+                <div class="field-row"><label for="cv-quality-slider">Qualité</label><span class="val"
+                    id="cv-quality-value">85%</span></div>
+                <input type="range" id="cv-quality-slider" min="1" max="100" value="85">
+              </div>
+              <div class="field" id="cv-svg-scale-row" style="display:none;margin-top:13px;">
+                <label for="cv-svg-width">Largeur de rendu (px)</label>
+                <input class="num mono" type="number" id="cv-svg-width" min="16" value="1024">
+                <p class="hint">Le SVG n'a pas de taille fixe : choisissez la résolution du raster généré.</p>
+              </div>
+              <div class="notice notice-info" id="cv-notice" style="margin-top:13px;display:none;"></div>
+            </div>
+            <div class="card control-card">
+              <h3>Pourquoi pas HEIC ou RAW ?</h3>
+              <p class="hint"><b style="color:var(--ink-dim);">HEIC</b> repose sur un encodeur breveté que les
+                navigateurs n'exposent pas au web.<br><br><b style="color:var(--ink-dim);">RAW</b> désigne les données
+                brutes d'un capteur photo (par ex. CR2, NEF, ARW) : ce n'est pas un simple encodage d'image finie, donc
+                impossible à générer depuis un fichier déjà traité.</p>
+            </div>
+            <button class="btn btn-accent btn-block" id="cv-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="cv-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 4 — RECADRER ET PIVOTER -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-croprotate" data-tool="croprotate" aria-labelledby="h-croprotate">
+        <div class="panel-head">
+          <h2 id="h-croprotate">Recadrer et pivoter</h2>
+          <p>Faites pivoter librement ou par pas de 90°, puis ajustez la sélection directement sur l'image grâce aux
+            poignées.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="cr-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="cr-file-input"
+                accept=".png,.jpg,.jpeg,.svg,.webp,.avif,image/png,image/jpeg,image/svg+xml,image/webp,image/avif"
+                aria-label="Choisir une image à recadrer">
+            </div>
+            <div class="stage" id="cr-stage">
+              <div class="loading-overlay" id="cr-loading"><span class="spinner"></span><span
+                  class="msg">Traitement…</span></div>
+              <div class="crop-stage" id="cr-crop-stage">
+                <img id="cr-image" alt="Image à recadrer">
+                <div class="crop-box" id="cr-crop-box">
+                  <div class="third v1"></div>
+                  <div class="third v2"></div>
+                  <div class="third h1"></div>
+                  <div class="third h2"></div>
+                  <div class="crop-handle h-nw" data-h="nw"></div>
+                  <div class="crop-handle h-n" data-h="n"></div>
+                  <div class="crop-handle h-ne" data-h="ne"></div>
+                  <div class="crop-handle h-e" data-h="e"></div>
+                  <div class="crop-handle h-se" data-h="se"></div>
+                  <div class="crop-handle h-s" data-h="s"></div>
+                  <div class="crop-handle h-sw" data-h="sw"></div>
+                  <div class="crop-handle h-w" data-h="w"></div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-strip" id="cr-stats" style="display:none;">
+              <div class="stat"><span class="k">Sélection</span><span class="v mono" id="cr-stat-sel">—</span></div>
+              <div class="stat"><span class="k">Rotation</span><span class="v mono" id="cr-stat-rot">0°</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card">
+              <h3>Rotation</h3>
+              <div class="field">
+                <div class="field-row"><label for="cr-rotate-slider">Angle libre</label><span class="val"
+                    id="cr-rotate-value">0°</span></div>
+                <input type="range" id="cr-rotate-slider" min="-180" max="180" value="0">
+              </div>
+              <div class="toolbar-row">
+                <button class="btn btn-ghost btn-sm" id="cr-rotate-left90" title="Pivoter -90°">↺ 90°</button>
+                <button class="btn btn-ghost btn-sm" id="cr-rotate-right90" title="Pivoter +90°">↻ 90°</button>
+                <button class="btn btn-ghost btn-sm" id="cr-flip-h" title="Miroir horizontal">Miroir H</button>
+                <button class="btn btn-ghost btn-sm" id="cr-flip-v" title="Miroir vertical">Miroir V</button>
+              </div>
+            </div>
+            <div class="card control-card">
+              <h3>Cadrage</h3>
+              <div class="aspect-row" id="cr-aspect-row">
+                <button class="aspect-chip" data-ratio="free" aria-pressed="true">Libre</button>
+                <button class="aspect-chip" data-ratio="1:1" aria-pressed="false">1:1</button>
+                <button class="aspect-chip" data-ratio="4:3" aria-pressed="false">4:3</button>
+                <button class="aspect-chip" data-ratio="3:2" aria-pressed="false">3:2</button>
+                <button class="aspect-chip" data-ratio="16:9" aria-pressed="false">16:9</button>
+                <button class="aspect-chip" data-ratio="9:16" aria-pressed="false">9:16</button>
+              </div>
+              <button class="btn btn-ghost btn-block btn-sm" id="cr-reset-crop-btn"
+                style="margin-top:12px;">Réinitialiser la sélection</button>
+            </div>
+            <div class="notice notice-info" id="cr-svg-note" style="display:none;">Ce SVG est rasterisé pour permettre
+              un recadrage précis au pixel ; le fichier obtenu sera une image (PNG).</div>
+            <button class="btn btn-accent btn-block" id="cr-download-btn" disabled>Télécharger le recadrage</button>
+            <button class="btn btn-text btn-block" id="cr-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 5 — AMÉLIORER / AGRANDIR -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-enhance" data-tool="enhance" aria-labelledby="h-enhance">
+        <div class="panel-head">
+          <h2 id="h-enhance">Améliorer et agrandir</h2>
+          <p>Agrandit une photo par ré-échantillonnage Lanczos haute qualité puis compense le flou naturel avec un
+            renforcement de netteté adaptatif — sans réseau de neurones à télécharger.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="en-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">JPG, PNG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="en-file-input"
+                accept=".png,.jpg,.jpeg,.webp,.avif,image/png,image/jpeg,image/webp,image/avif"
+                aria-label="Choisir une image à améliorer">
+            </div>
+            <div class="stage" id="en-stage">
+              <div class="loading-overlay" id="en-loading"><span class="spinner"></span><span
+                  class="msg">Agrandissement…</span></div>
+              <div class="compare checkerboard" id="en-compare" style="display:none;">
+                <img class="base" id="en-preview-before" alt="Avant amélioration">
+                <div class="overlay" id="en-overlay"><img id="en-preview-after" alt="Après amélioration"></div>
+                <div class="divider" id="en-divider" style="left:50%;">
+                  <div class="line"></div>
+                  <div class="knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                      stroke-linecap="round">
+                      <path d="M8 8l-4 4 4 4M16 8l4 4-4 4" /></svg></div>
+                </div>
+                <span class="tag before">Avant</span><span class="tag after">Après</span>
+              </div>
+              <div class="notice notice-info" id="en-svg-note" style="display:none;max-width:420px;">Un SVG est déjà
+                vectoriel : il s'agrandit sans aucune perte directement via l'outil <b>Redimensionner</b>,
+                l'amélioration ne s'applique pas ici.</div>
+            </div>
+            <div class="stat-strip" id="en-stats" style="display:none;">
+              <div class="stat"><span class="k">Origine</span><span class="v mono" id="en-stat-before">—</span></div>
+              <span class="stat-sep">→</span>
+              <div class="stat"><span class="k">Résultat</span><span class="v mono accent" id="en-stat-after">—</span>
+              </div>
+              <div class="stat"><span class="k">Poids</span><span class="v mono" id="en-stat-size">—</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card" id="en-controls">
+              <h3>Facteur d'agrandissement</h3>
+              <div class="seg seg-block" role="group" aria-label="Facteur d'agrandissement" id="en-scale-seg">
+                <button type="button" data-scale="1.5">1.5×</button>
+                <button type="button" data-scale="2" aria-pressed="true">2×</button>
+                <button type="button" data-scale="3">3×</button>
+                <button type="button" data-scale="4">4×</button>
+              </div>
+            </div>
+            <div class="card control-card" id="en-controls-2">
+              <h3>Netteté<span class="info-ic"
+                  data-tip="Compense le léger flou inhérent à tout agrandissement par interpolation.">i</span></h3>
+              <div class="field">
+                <div class="field-row"><label for="en-sharpness-slider">Intensité</label><span class="val"
+                    id="en-sharpness-value">60%</span></div>
+                <input type="range" id="en-sharpness-slider" min="0" max="100" value="60">
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <div class="tt">Réduction du bruit</div>
+                  <div class="desc">Utile sur une photo déjà compressée</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="en-denoise-toggle"><span class="track"></span></label>
+              </div>
+            </div>
+            <button class="btn btn-accent btn-block" id="en-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="en-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 6 — SUPPRIMER L'ARRIÈRE-PLAN -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-removebg" data-tool="removebg" aria-labelledby="h-removebg">
+        <div class="panel-head">
+          <h2 id="h-removebg">Supprimer l'arrière-plan</h2>
+          <p>Détourage par propagation colorimétrique (distance perceptuelle Lab) depuis les bords, avec retouche fine
+            au pinceau pour un résultat précis — tout se passe dans votre navigateur, aucune image envoyée où que ce
+            soit.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="bg-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="bg-file-input"
+                accept=".png,.jpg,.jpeg,.svg,.webp,.avif,image/png,image/jpeg,image/svg+xml,image/webp,image/avif"
+                aria-label="Choisir une image pour détourage">
+            </div>
+            <div class="stage checkerboard" id="bg-stage">
+              <div class="loading-overlay" id="bg-loading"><span class="spinner"></span><span
+                  class="msg">Détourage…</span></div>
+              <canvas class="stage-media" id="bg-canvas"></canvas>
+              <div class="brush-cursor" id="bg-brush-cursor"></div>
+            </div>
+            <div class="stat-strip" id="bg-stats" style="display:none;">
+              <div class="stat"><span class="k">Mode</span><span class="v mono" id="bg-stat-mode">Auto</span></div>
+              <div class="stat"><span class="k">Tolérance</span><span class="v mono" id="bg-stat-tol">28</span></div>
+              <div class="stat"><span class="k">Dimensions</span><span class="v mono" id="bg-stat-dims">—</span></div>
+            </div>
+            <div class="notice notice-info" id="bg-svg-note" style="display:none;">Ce SVG est rasterisé pour permettre
+              une analyse précise des couleurs, pixel par pixel.</div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card">
+              <h3>Détection</h3>
+              <div class="seg seg-block" role="group" aria-label="Mode de détection" id="bg-mode-seg">
+                <button type="button" data-mode="auto" aria-pressed="true">Auto</button>
+                <button type="button" data-mode="manual" aria-pressed="false">Points manuels</button>
+              </div>
+              <p class="hint" id="bg-mode-hint" style="margin-top:9px;">Détecte le fond depuis les bords de l'image.
+                Ajustez, puis relâchez le curseur.</p>
+              <div class="field" style="margin-top:12px;">
+                <div class="field-row"><label for="bg-tolerance-slider">Tolérance</label><span class="val"
+                    id="bg-tolerance-value">28</span></div>
+                <input type="range" id="bg-tolerance-slider" min="1" max="100" value="28">
+              </div>
+              <div class="field">
+                <div class="field-row"><label for="bg-feather-slider">Adoucir les bords</label><span class="val"
+                    id="bg-feather-value">2</span></div>
+                <input type="range" id="bg-feather-slider" min="0" max="10" value="2">
+              </div>
+              <button class="btn btn-ghost btn-block btn-sm" id="bg-restore-btn">Revenir à l'image d'origine</button>
+            </div>
+            <div class="card control-card">
+              <h3>Retouche au pinceau</h3>
+              <div class="seg seg-block" role="group" aria-label="Mode du pinceau" id="bg-brush-seg">
+                <button type="button" data-brush="erase" aria-pressed="true">Effacer</button>
+                <button type="button" data-brush="restore" aria-pressed="false">Restaurer</button>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <div class="field-row"><label for="bg-brush-size">Taille du pinceau</label><span class="val"
+                    id="bg-brush-size-value">24 px</span></div>
+                <input type="range" id="bg-brush-size" min="4" max="120" value="24">
+              </div>
+              <button class="btn btn-ghost btn-block btn-sm" id="bg-undo-btn" disabled>Annuler la dernière
+                retouche</button>
+            </div>
+            <div class="card control-card">
+              <h3>Export</h3>
+              <select id="bg-export-format">
+                <option value="png">PNG (fond transparent)</option>
+                <option value="webp">WEBP (fond transparent)</option>
+                <option value="jpg">JPG (fond en couleur unie)</option>
+              </select>
+              <div class="color-row" id="bg-matte-row" style="display:none;margin-top:10px;">
+                <input type="color" id="bg-matte-color" value="#ffffff">
+                <span class="hint">Couleur de fond pour le JPG</span>
+              </div>
+            </div>
+            <button class="btn btn-accent btn-block" id="bg-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="bg-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 7 — FILIGRANE -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-watermark" data-tool="watermark" aria-labelledby="h-watermark">
+        <div class="panel-head">
+          <h2 id="h-watermark">Ajouter un filigrane</h2>
+          <p>Texte ou logo, positionné à la souris ou par préréglage, avec dix typographies au choix. Sur un SVG, le
+            filigrane est inséré nativement pour rester 100% vectoriel.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="dropzone" id="wm-dropzone">
+              <div class="dz-inner">
+                <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4M12 4l-4 4M12 4l4 4" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" /></svg>
+                <div class="dz-title">Glissez une image ou <b>parcourez vos fichiers</b></div>
+                <div class="dz-sub">PNG, JPG, SVG, WEBP ou AVIF</div>
+              </div>
+              <input type="file" id="wm-file-input"
+                accept=".png,.jpg,.jpeg,.svg,.webp,.avif,image/png,image/jpeg,image/svg+xml,image/webp,image/avif"
+                aria-label="Choisir une image à filigraner">
+            </div>
+            <div class="stage" id="wm-stage">
+              <div class="loading-overlay" id="wm-loading"><span class="spinner"></span><span class="msg">Rendu…</span>
+              </div>
+              <div class="crop-stage" id="wm-preview-wrap">
+                <canvas class="stage-media" id="wm-canvas"></canvas>
+                <div class="wm-drag-layer" id="wm-drag-layer">
+                  <div class="wm-text-handle" id="wm-text-handle" aria-label="Déplacer le filigrane" role="button"
+                    tabindex="0"></div>
+                </div>
+              </div>
+            </div>
+            <div class="notice notice-info" id="wm-svg-badge" style="display:none;">Filigrane inséré nativement dans le
+              SVG : le fichier exporté reste 100% vectoriel.</div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card">
+              <h3>Contenu</h3>
+              <div class="seg seg-block" role="group" aria-label="Type de filigrane" id="wm-mode-seg">
+                <button type="button" data-wmmode="text" aria-pressed="true">Texte</button>
+                <button type="button" data-wmmode="image" aria-pressed="false">Logo</button>
+              </div>
+              <div class="field" id="wm-text-field" style="margin-top:12px;">
+                <label for="wm-text-input">Texte</label>
+                <input class="text-input" type="text" id="wm-text-input" value="© Votre marque" maxlength="80">
+              </div>
+              <div class="field" id="wm-font-field">
+                <label for="wm-font-select">Typographie</label>
+                <select id="wm-font-select">
+                  <option value="Syne" data-stack="'Syne',sans-serif" selected>Syne</option>
+                  <option value="Montserrat" data-stack="'Montserrat',sans-serif">Montserrat</option>
+                  <option value="Times New Roman" data-stack="'Times New Roman',Times,serif">Times New Roman</option>
+                  <option value="Playfair Display" data-stack="'Playfair Display',serif">Playfair Display</option>
+                  <option value="Poppins" data-stack="'Poppins',sans-serif">Poppins</option>
+                  <option value="Arial" data-stack="Arial,Helvetica,sans-serif">Arial</option>
+                  <option value="Georgia" data-stack="Georgia,'Times New Roman',serif">Georgia</option>
+                  <option value="Bebas Neue" data-stack="'Bebas Neue',sans-serif">Bebas Neue</option>
+                  <option value="Caveat" data-stack="'Caveat',cursive">Caveat</option>
+                  <option value="Courier New" data-stack="'Courier New',Courier,monospace">Courier New</option>
+                </select>
+              </div>
+              <div class="field" id="wm-logo-field" style="display:none;">
+                <label for="wm-logo-input">Fichier logo</label>
+                <input class="text-input" type="file" id="wm-logo-input" accept="image/*">
+                <p class="hint">PNG à fond transparent conseillé.</p>
+              </div>
+            </div>
+            <div class="card control-card">
+              <h3>Apparence</h3>
+              <div class="field" id="wm-size-field">
+                <div class="field-row"><label for="wm-size-slider">Taille</label><span class="val"
+                    id="wm-size-value">6%</span></div>
+                <input type="range" id="wm-size-slider" min="1" max="40" value="6">
+              </div>
+              <div class="field" id="wm-color-field">
+                <label>Couleur</label>
+                <div class="color-row"><input type="color" id="wm-color-input" value="#ffffff"><span class="hint mono"
+                    id="wm-color-hex">#FFFFFF</span></div>
+              </div>
+              <div class="field">
+                <div class="field-row"><label for="wm-opacity-slider">Opacité</label><span class="val"
+                    id="wm-opacity-value">65%</span></div>
+                <input type="range" id="wm-opacity-slider" min="5" max="100" value="65">
+              </div>
+              <div class="field">
+                <div class="field-row"><label for="wm-rotation-slider">Rotation</label><span class="val"
+                    id="wm-rotation-value">0°</span></div>
+                <input type="range" id="wm-rotation-slider" min="-180" max="180" value="0">
+              </div>
+              <div class="toggle-row" id="wm-stroke-row">
+                <div class="tt">Contour</div>
+                <label class="switch"><input type="checkbox" id="wm-stroke-toggle"><span class="track"></span></label>
+              </div>
+              <div class="toggle-row" id="wm-shadow-row">
+                <div class="tt">Ombre portée</div>
+                <label class="switch"><input type="checkbox" id="wm-shadow-toggle" checked><span
+                    class="track"></span></label>
+              </div>
+            </div>
+            <div class="card control-card">
+              <h3>Position</h3>
+              <div class="toggle-row">
+                <div>
+                  <div class="tt">Répéter en mosaïque</div>
+                  <div class="desc">Filigrane répété sur toute l'image</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="wm-tile-toggle"><span class="track"></span></label>
+              </div>
+              <div id="wm-position-block" style="margin-top:12px;">
+                <div class="pos-grid" id="wm-pos-grid" role="group" aria-label="Position du filigrane">
+                  <button type="button" class="pos-btn" data-pos="tl" aria-label="Haut gauche"></button>
+                  <button type="button" class="pos-btn" data-pos="tc" aria-label="Haut centre"></button>
+                  <button type="button" class="pos-btn" data-pos="tr" aria-label="Haut droite"></button>
+                  <button type="button" class="pos-btn" data-pos="cl" aria-label="Centre gauche"></button>
+                  <button type="button" class="pos-btn" data-pos="cc" aria-pressed="true" aria-label="Centre"></button>
+                  <button type="button" class="pos-btn" data-pos="cr" aria-label="Centre droite"></button>
+                  <button type="button" class="pos-btn" data-pos="bl" aria-label="Bas gauche"></button>
+                  <button type="button" class="pos-btn" data-pos="bc" aria-label="Bas centre"></button>
+                  <button type="button" class="pos-btn" data-pos="br" aria-label="Bas droite"></button>
+                </div>
+                <p class="hint" style="margin-top:8px;">Ou glissez le texte directement sur l'aperçu.</p>
+              </div>
+              <div class="field" id="wm-density-field" style="display:none;margin-top:12px;">
+                <div class="field-row"><label for="wm-density-slider">Densité</label><span class="val"
+                    id="wm-density-value">3</span></div>
+                <input type="range" id="wm-density-slider" min="1" max="6" value="3">
+              </div>
+            </div>
+            <button class="btn btn-accent btn-block" id="wm-download-btn" disabled>Télécharger</button>
+            <button class="btn btn-text btn-block" id="wm-reset-btn">Recommencer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- OUTIL 8 — HTML EN IMAGE -->
+      <!-- ================================================================ -->
+      <section class="tool-panel" id="panel-html2img" data-tool="html2img" aria-labelledby="h-html2img">
+        <div class="panel-head">
+          <h2 id="h-html2img">HTML en image</h2>
+          <p>Écrivez ou collez un fragment HTML et sa feuille de style, puis exportez le rendu en PNG ou JPG. Le rendu
+            est isolé du reste de l'atelier : votre CSS ne peut pas affecter cette page.</p>
+        </div>
+        <div class="panel-body">
+          <div class="stage-col">
+            <div class="card" style="padding:16px;">
+              <div class="code-tabs">
+                <button type="button" class="code-tab-btn" data-pane="html" aria-pressed="true">HTML</button>
+                <button type="button" class="code-tab-btn" data-pane="css" aria-pressed="false">CSS</button>
+              </div>
+              <div class="code-pane is-active" id="hi-pane-html">
+                <textarea class="text-input" id="hi-html-textarea" spellcheck="false">&lt;div class="card"&gt;
+  &lt;p class="quote"&gt;&amp;ldquo;La simplicit&#233; est la sophistication supr&#234;me.&amp;rdquo;&lt;/p&gt;
+  &lt;p class="author"&gt;&#8212; L&#233;onard de Vinci&lt;/p&gt;
+&lt;/div&gt;</textarea>
+              </div>
+              <div class="code-pane" id="hi-pane-css">
+                <textarea class="text-input" id="hi-css-textarea" spellcheck="false">body{
+  margin:0; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#1B1D21,#0C8B85);
+  font-family:Georgia,serif;
+}
+.card{max-width:80%;text-align:center;color:#fff;}
+.quote{font-size:28px;line-height:1.4;margin:0 0 14px;}
+.author{font-size:15px;opacity:.8;margin:0;letter-spacing:.03em;}</textarea>
+              </div>
+              <div class="tpl-row" style="margin-top:11px;">
+                <button class="tpl-chip" type="button" data-tpl="quote">Carte citation</button>
+                <button class="tpl-chip" type="button" data-tpl="social">Bandeau réseau social</button>
+                <button class="tpl-chip" type="button" data-tpl="receipt">Reçu</button>
+              </div>
+            </div>
+            <div class="card" style="padding:16px;">
+              <h3 style="font-family:var(--font-ui);font-weight:600;font-size:12.5px;margin-bottom:12px;">Aperçu</h3>
+              <div class="stage" style="min-height:200px;display:flex;overflow:auto;" id="hi-stage">
+                <div class="loading-overlay" id="hi-loading"><span class="spinner"></span><span
+                    class="msg">Rendu…</span></div>
+                <div id="hi-preview-frame"
+                  style="border:1px solid var(--line);background:#fff;overflow:hidden;flex:none;">
+                  <div id="hi-preview-root"></div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-strip" id="hi-stats" style="display:none;">
+              <div class="stat"><span class="k">Dimensions export</span><span class="v mono" id="hi-stat-dims">—</span>
+              </div>
+              <div class="stat"><span class="k">Poids</span><span class="v mono" id="hi-stat-size">—</span></div>
+            </div>
+          </div>
+          <div class="controls-col">
+            <div class="card control-card">
+              <h3>Cadre</h3>
+              <div class="dim-row" style="grid-template-columns:1fr 1fr;">
+                <div class="field" style="margin-bottom:0;"><label for="hi-width-input">Largeur</label><input
+                    class="num mono" type="number" id="hi-width-input" value="800" min="50" max="4000"></div>
+                <div class="field" style="margin-bottom:0;"><label for="hi-height-input">Hauteur</label><input
+                    class="num mono" type="number" id="hi-height-input" value="450" min="50" max="4000"></div>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="hi-scale-select">Résolution</label>
+                <select id="hi-scale-select">
+                  <option value="1">1× (standard)</option>
+                  <option value="2" selected>2× (rétina)</option>
+                  <option value="3">3× (impression)</option>
+                </select>
+              </div>
+            </div>
+            <div class="card control-card">
+              <h3>Export</h3>
+              <select id="hi-format-select">
+                <option value="png" selected>PNG</option>
+                <option value="jpg">JPG</option>
+              </select>
+              <div class="field" id="hi-quality-row" style="display:none;margin-top:12px;">
+                <div class="field-row"><label for="hi-quality-slider">Qualité</label><span class="val"
+                    id="hi-quality-value">90%</span></div>
+                <input type="range" id="hi-quality-slider" min="1" max="100" value="90">
+              </div>
+              <div class="color-row" id="hi-bg-row" style="margin-top:12px;">
+                <input type="color" id="hi-bg-color" value="#ffffff">
+                <span class="hint">Fond si pas de transparence</span>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-block" id="hi-render-btn" type="button">Actualiser l'aperçu</button>
+            <button class="btn btn-accent btn-block" id="hi-download-btn" disabled>Télécharger l'image</button>
+            <p class="hint">Les balises <span class="mono">&lt;script&gt;</span> sont ignorées : cet outil capture un
+              rendu visuel, pas une page interactive.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
